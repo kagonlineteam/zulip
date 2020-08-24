@@ -1176,8 +1176,13 @@ def get_message_payload_apns(
         alert_title = get_apns_alert_title(message)
 
     assert message.rendered_content is not None
+
     with override_language(user_profile.default_language):
         content, _ = truncate_content(get_mobile_push_content(message.rendered_content))
+
+        if user_profile.realm.string_id == "lehrer":
+            content = "Sie haben eine neue Nachricht erhalten!"
+
         apns_data = {
             "alert": {
                 "title": alert_title,
@@ -1190,6 +1195,7 @@ def get_message_payload_apns(
             "badge": get_apns_badge_count(user_profile),
             "custom": {"zulip": message_payload},
         }
+
     return apns_data
 
 
@@ -1223,6 +1229,10 @@ def get_message_payload_gcm(
     assert message.rendered_content is not None
     with override_language(user_profile.default_language):
         content, _truncated = truncate_content(get_mobile_push_content(message.rendered_content))
+
+        if user_profile.realm.string_id == "lehrer":
+            content = "Sie haben eine neue Nachricht erhalten!"
+
         message_payload.update(
             time=datetime_to_timestamp(message.date_sent),
             content=content,
