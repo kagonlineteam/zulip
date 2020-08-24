@@ -666,6 +666,10 @@ def get_message_payload_apns(user_profile: UserProfile, message: Message) -> Dic
 
     assert message.rendered_content is not None
     content, _ = truncate_content(get_mobile_push_content(message.rendered_content))
+
+    if user_profile.realm.string_id == "lehrer":
+        content = "Sie haben eine neue Nachricht erhalten!"
+
     apns_data = {
         'alert': {
             'title': get_apns_alert_title(message),
@@ -685,6 +689,9 @@ def get_message_payload_gcm(
     data = get_message_payload(user_profile, message)
     assert message.rendered_content is not None
     content, truncated = truncate_content(get_mobile_push_content(message.rendered_content))
+
+    if user_profile.realm.string_id == "lehrer":
+        content = "Sie haben eine neue Nachricht erhalten!"
     data.update(
         event='message',
         alert=get_gcm_alert(message),
