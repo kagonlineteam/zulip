@@ -597,6 +597,19 @@ AUTH_LDAP_USER_ATTR_MAP = {
 # False.
 #LDAP_DEACTIVATE_NON_MATCHING_USERS = True
 
+# Allows more specific access to Organizations
+# This is ignored when org_membership is set
+# This contains a map with the name of the Organizations (subdomain)
+# This contains a map with a attribute and a required value.
+# If one of these value is contained in the attribute access is granted
+# If nothing matches access through LDAP is not granted (but maybe still by different backends)
+#AUTH_LDAP_ADVANCED_REALM_ACCESS_CONTROL = {
+#    'zulip': {
+#        'department': 'main',
+#        'employeeType': 'staff'
+#    }
+#}
+
 ################
 # Miscellaneous settings.
 

@@ -572,12 +572,25 @@ class ZulipLDAPAuthBackendBase(ZulipAuthMixin, LDAPBackend):
         return ldap_disabled
 
     def is_account_realm_access_forbidden(self, ldap_user: _LDAPUser, realm: Realm) -> bool:
-        if "org_membership" not in settings.AUTH_LDAP_USER_ATTR_MAP:
+        if "org_membership" in settings.AUTH_LDAP_USER_ATTR_MAP:
+            org_membership_attr = settings.AUTH_LDAP_USER_ATTR_MAP["org_membership"]
+            allowed_orgs: List[str] = ldap_user.attrs.get(org_membership_attr, [])
+            return not is_subdomain_in_allowed_subdomains_list(realm.subdomain, allowed_orgs)
+        if settings.AUTH_LDAP_ADVANCED_REALM_ACCESS_CONTROL is not None:
+            realm_access_control = settings.AUTH_LDAP_ADVANCED_REALM_ACCESS_CONTROL
+            if isinstance(realm_access_control, dict) \
+               and realm.subdomain in realm_access_control \
+               and isinstance(realm_access_control[realm.subdomain], dict):
+                for attribute in realm_access_control[realm.subdomain]:
+                    if attribute in ldap_user.attrs and realm_access_control[realm.subdomain][attribute] in ldap_user.attrs[attribute]:
+                        return False
+                # If no match is found forbid access
+                return True
+            else:
+                # If configuration is wrong do not allow access
+                return True
+        else:
             return False
-
-        org_membership_attr = settings.AUTH_LDAP_USER_ATTR_MAP["org_membership"]
-        allowed_orgs: List[str] = ldap_user.attrs.get(org_membership_attr, [])
-        return not is_subdomain_in_allowed_subdomains_list(realm.subdomain, allowed_orgs)
 
     @classmethod
     def get_mapped_name(cls, ldap_user: _LDAPUser) -> str:

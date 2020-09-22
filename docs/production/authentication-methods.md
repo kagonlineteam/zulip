@@ -459,6 +459,10 @@ department: www
 ...
 ```
 
+If you need more specific access rules have a look at the `AUTH_LDAP_ADVANCED_REALM_ACCESS_CONTROL`
+setting which allows multiple attributes, different attributes for different organizations and
+custom required values.
+
 ```eval_rst
 .. warning::
     Restricting access using this mechanism will only affect authentication via LDAP,
