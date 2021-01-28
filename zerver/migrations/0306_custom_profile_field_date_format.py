@@ -12,16 +12,4 @@ class Migration(migrations.Migration):
         ("zerver", "0305_realm_deactivated_redirect"),
     ]
 
-    operations = [
-        migrations.RunSQL(
-            sql="""\
-                UPDATE zerver_customprofilefieldvalue
-                SET value = to_char(to_date(value, 'YYYY-MM-DD'), 'YYYY-MM-DD')
-                FROM zerver_customprofilefield AS f
-                WHERE f.id = field_id
-                AND f.field_type = 4
-                AND value <> to_char(to_date(value, 'YYYY-MM-DD'), 'YYYY-MM-DD');
-            """,
-            reverse_sql="",
-        ),
-    ]
+    operations = []
